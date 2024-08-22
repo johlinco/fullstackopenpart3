@@ -3,7 +3,12 @@ const morgan = require('morgan')
 
 const app = express()
 
-app.use(morgan('combined'))
+morgan.token('body', req => {
+  return JSON.stringify(req.body)
+})
+
+app.use(express.json())
+app.use(morgan(':method :url :body'))
 
 const persons = [
     { 
@@ -56,8 +61,8 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  const body = request.body
   console.log(request.body)
+  const body = request.body
 
   if (!body.name) {
     return response.status(400).json({
