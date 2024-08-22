@@ -49,17 +49,32 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id
-  persons = persons.filter(person => id !== person.id) 
+  persons.filter(person => id !== person.id) 
   response.status(204).end
 })
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
+  console.log(body)
 
   if (!body.name) {
-    return response.data(400).json({
+    return response.status(400).json({
       error: 'name missing'
   })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'number missing'
+    })
+  }
+
+  for (const personEntry of persons) {
+    if (personEntry.name === body.name) {
+      return response.status(400).json({
+        error: 'name already in phonebook'
+      })
+    }
   }
 
   const person = {
@@ -69,7 +84,7 @@ app.post('/api/persons', (request, response) => {
   }
 
   persons.concat(person)
-  console.log(person)
+
   response.json(person)
 })
 
