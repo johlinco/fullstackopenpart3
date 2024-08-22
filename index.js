@@ -1,7 +1,9 @@
-const express = require('express');
-const app = express();
+const express = require('express')
+const morgan = require('morgan')
 
-app.use(express.json())
+const app = express()
+
+app.use(morgan('combined'))
 
 const persons = [
     { 
