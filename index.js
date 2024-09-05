@@ -3,6 +3,13 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
+const mongoose = require('mongoose')
+
+
+const url = process.env.MONGODB_URI
+
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
 
 const app = express()
 
@@ -105,6 +112,7 @@ app.post('/api/persons', (request, response) => {
 })
 
 const PORT = process.env.PORT
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
