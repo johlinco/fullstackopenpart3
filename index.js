@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 const mongoose = require('mongoose')
+const person = require('./models/person')
 const app = express()
 
 
@@ -57,20 +58,28 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/info', (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people.</p><p>${new Date()}</p>`
-  )
+  Person.find({})
+    .then(persons => {
+      response.send(
+        `<p>Phonebook has info for ${persons.length} people.</p><p>${new Date()}</p>`
+      )
+    })
+
+  // response.send(
+  //   `<p>Phonebook has info for ${persons.length} people.</p><p>${new Date()}</p>`
+  // )
 }) 
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else (
+        response.status(404).end()
+      )
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
