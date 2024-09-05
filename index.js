@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 const mongoose = require('mongoose')
+const app = express()
 
 
 const url = process.env.MONGODB_URI
@@ -11,7 +12,7 @@ const url = process.env.MONGODB_URI
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
-const app = express()
+
 
 app.use(cors())
 app.use(express.static('dist'))
@@ -80,13 +81,13 @@ app.post('/api/persons', (request, response) => {
   console.log(request.body)
   const body = request.body
 
-  if (!body.name) {
+  if (body.name === undefined) {
     return response.status(400).json({
       error: 'name missing'
   })
   }
 
-  if (!body.number) {
+  if (body.number === undefined) {
     return response.status(400).json({
       error: 'number missing'
     })
@@ -100,15 +101,14 @@ app.post('/api/persons', (request, response) => {
     }
   }
 
-  const person = {
-    id: Math.floor(Math.random() * 1000000),
+  const person = new Person ({
     name: body.name,
     number: body.number,
-  }
-
-  persons.concat(person)
-
-  response.json(person)
+  })
+  console.log(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
